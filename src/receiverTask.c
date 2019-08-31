@@ -5,7 +5,7 @@ void vReceiverTask( void *pvParameters )
 	/* Declare the variable that will hold the values received from the queue. */
 	//vTaskDelay(pdMS_TO_TICKS( 6000UL ));
 	SSD1306_ClearDisplay();
-	real32_t lReceivedValueAM2301, lReceivedValueMQ2;
+	real32_t lReceivedValueAM2301[2], lReceivedValueMQ2;
 	BaseType_t xStatusMQ2, xStatusAM2301;
 	const TickType_t xTicksToWait = pdMS_TO_TICKS( 1000UL );
 	static char uartBuff[10];
@@ -41,12 +41,22 @@ void vReceiverTask( void *pvParameters )
 			//vPrintStringAndNumber( "Received = ", lReceivedValue );
 
 			uartWriteString( UART_USB, "Temperatura: " );
-			floatToString( lReceivedValueAM2301, uartBuff, 1 );
+			floatToString( lReceivedValueAM2301[0], uartBuff, 1 );
 			uartWriteString( UART_USB, uartBuff);
 			uartWriteString( UART_USB, " grados C\r\n" );
 
 			SSD1306_DrawText(0,10, "Temp: " , 1);
 			SSD1306_DrawText(30,10, uartBuff , 1);
+			SSD1306_Display();
+
+			uartWriteString( UART_USB, "Hum: " );
+			floatToString( lReceivedValueAM2301[1], uartBuff, 4 );
+			uartWriteString( UART_USB, uartBuff);
+			uartWriteString( UART_USB, " % C\r\n" );
+
+			SSD1306_DrawText(0,20, "Hum: " , 1);
+			SSD1306_DrawText(25,20, uartBuff , 1);
+			SSD1306_DrawText(55,20, " % " , 1);
 			SSD1306_Display();
 
 

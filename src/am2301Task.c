@@ -2,7 +2,7 @@
 
 void am2301Task( void *pvParameters )
 {
-   real32_t lValueToSend;
+   real32_t lValueToSend[2];
    BaseType_t xStatus;
 
    dht11Init( GPIO1 ); // Inicializo el sensor DHT11
@@ -25,7 +25,8 @@ void am2301Task( void *pvParameters )
 	   	   //gpioWrite( LEDG, ON );
 	   	   //gpioWrite( LEDR, OFF );
 
-	      lValueToSend = temperature;
+	      lValueToSend[0] = temperature;
+	      lValueToSend[1] = humidity;
 
 	      xStatus = xQueueSendToBack( xQueueAM2301, &lValueToSend, 0 );
 
