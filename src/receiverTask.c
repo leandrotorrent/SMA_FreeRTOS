@@ -2,24 +2,26 @@
 
 void vReceiverTask( void *pvParameters )
 {
-   /* Declare the variable that will hold the values received from the queue. */
-   real32_t lReceivedValueAM2301, lReceivedValueMQ2;
-   BaseType_t xStatusMQ2, xStatusAM2301;
-   const TickType_t xTicksToWait = pdMS_TO_TICKS( 1000UL );
-   static char uartBuff[10];
+	/* Declare the variable that will hold the values received from the queue. */
+	//vTaskDelay(pdMS_TO_TICKS( 6000UL ));
+	SSD1306_ClearDisplay();
+	real32_t lReceivedValueAM2301, lReceivedValueMQ2;
+	BaseType_t xStatusMQ2, xStatusAM2301;
+	const TickType_t xTicksToWait = pdMS_TO_TICKS( 1000UL );
+	static char uartBuff[10];
 
-   /* This task is also defined within an infinite loop. */
-   for( ;; ) {
-      /* As this task unblocks immediately that data is written to the queue this
+	/* This task is also defined within an infinite loop. */
+	for( ;; ) {
+		/* As this task unblocks immediately that data is written to the queue this
       call should always find the queue empty. */
-      if( uxQueueMessagesWaiting( xQueueMQ2 ) != 0 ) {
-         vPrintString( "Queue should have been empty!\r\n" );
-      }
-      if( uxQueueMessagesWaiting( xQueueAM2301 ) != 0 ) {
-              vPrintString( "Queue should have been empty!\r\n" );
-           }
+		if( uxQueueMessagesWaiting( xQueueMQ2 ) != 0 ) {
+			vPrintString( "Queue should have been empty!\r\n" );
+		}
+		if( uxQueueMessagesWaiting( xQueueAM2301 ) != 0 ) {
+			vPrintString( "Queue should have been empty!\r\n" );
+		}
 
-      /* The first parameter is the queue from which data is to be received.  The
+		/* The first parameter is the queue from which data is to be received.  The
       queue is created before the scheduler is started, and therefore before this
       task runs for the first time.
 
@@ -30,43 +32,52 @@ void vReceiverTask( void *pvParameters )
       the last parameter is the block time � the maximum amount of time that the
       task should remain in the Blocked state to wait for data to be available should
       the queue already be empty. */
-      xStatusMQ2 = xQueueReceive( xQueueMQ2, &lReceivedValueMQ2, xTicksToWait );
-      xStatusAM2301 = xQueueReceive( xQueueAM2301, &lReceivedValueAM2301, xTicksToWait );
+		xStatusMQ2 = xQueueReceive( xQueueMQ2, &lReceivedValueMQ2, xTicksToWait );
+		xStatusAM2301 = xQueueReceive( xQueueAM2301, &lReceivedValueAM2301, xTicksToWait );
 
-      if( xStatusAM2301 == pdPASS ) {
-         /* Data was successfully received from the queue, print out the received
+		if( xStatusAM2301 == pdPASS ) {
+			/* Data was successfully received from the queue, print out the received
          value. */
-         //vPrintStringAndNumber( "Received = ", lReceivedValue );
+			//vPrintStringAndNumber( "Received = ", lReceivedValue );
 
-    	  uartWriteString( UART_USB, "Temperatura: " );
-    	  floatToString( lReceivedValueAM2301, uartBuff, 1 );
-    	  uartWriteString( UART_USB, uartBuff);
-    	  uartWriteString( UART_USB, " grados C\r\n" );
+			uartWriteString( UART_USB, "Temperatura: " );
+			floatToString( lReceivedValueAM2301, uartBuff, 1 );
+			uartWriteString( UART_USB, uartBuff);
+			uartWriteString( UART_USB, " grados C\r\n" );
+
+			SSD1306_DrawText(0,10, "Temp: " , 1);
+			SSD1306_DrawText(30,10, uartBuff , 1);
+			SSD1306_Display();
 
 
-      } else {
-         /* We did not receive anything from the queue even after waiting for 100ms.
+		} else {
+			/* We did not receive anything from the queue even after waiting for 100ms.
          This must be an error as the sending tasks are free running and will be
          continuously writing to the queue. */
-         vPrintString( "No se pudo recibir de AM2301.\r\n" );
-      }
-      if( xStatusMQ2 == pdPASS ) {
-               /* Data was successfully received from the queue, print out the received
+			vPrintString( "No se pudo recibir de AM2301.\r\n" );
+		}
+		if( xStatusMQ2 == pdPASS ) {
+			/* Data was successfully received from the queue, print out the received
                value. */
-               //vPrintStringAndNumber( "Received = ", lReceivedValue );
+			//vPrintStringAndNumber( "Received = ", lReceivedValue );
 
-          	  uartWriteString( UART_USB, "Humo: " );
-          	  floatToString( lReceivedValueMQ2, uartBuff, 4 );
-          	  uartWriteString( UART_USB, uartBuff);
-          	  uartWriteString( UART_USB, " % C\r\n" );
+			uartWriteString( UART_USB, "Humo: " );
+			floatToString( lReceivedValueMQ2, uartBuff, 4 );
+			uartWriteString( UART_USB, uartBuff);
+			uartWriteString( UART_USB, " % C\r\n" );
+
+			SSD1306_DrawText(0,30, "Humo: " , 1);
+			SSD1306_DrawText(30,30, uartBuff , 1);
+			SSD1306_DrawText(60,30, " % " , 1);
+			SSD1306_Display();
 
 
-            } else {
-               /* We did not receive anything from the queue even after waiting for 100ms.
+		} else {
+			/* We did not receive anything from the queue even after waiting for 100ms.
                This must be an error as the sending tasks are free running and will be
                continuously writing to the queue. */
-               vPrintString( "No se pudo recibir de MQ2.\r\n" );
-            }
-   }
+			vPrintString( "No se pudo recibir de MQ2.\r\n" );
+		}
+	}
 }
 

@@ -29,6 +29,7 @@
 #include <stddef.h>
 #include "ff.h"
 #include "fssdc.h"
+//#include "oledTasks.h"
 
 /*=====[C++ - begin]=========================================================*/
 
@@ -39,6 +40,7 @@ extern "C" {
 /*=====[Definition macros of public constants]===============================*/
 /**\I2C baudrate */
 #define BME280_I2C_RATE	100000
+#define OLED_I2C_RATE	400000
 /*=====[Public function-like macros]=========================================*/
 
 /*=====[Definitions of public data types]====================================*/
@@ -51,6 +53,7 @@ void am2301Task( void *pvParameters );
 void mq2Task( void *pvParameters );
 void vReceiverTask( void *pvParameters );
 void sdTask( void *pvParameters );
+void oledInitTask( void *pvParameters );
 /*=====[Prototypes (declarations) of public interrupt functions]=============*/
 
 /*=====[C++ - end]===========================================================*/
